@@ -7,7 +7,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const entry = WIKI_ENTRIES.find(e => e.slug === params.slug)
+  const { slug } = await params
+  const entry = WIKI_ENTRIES.find(e => e.slug === slug)
   if (!entry) return {}
   return {
     title: entry.title,
@@ -17,9 +18,12 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default function WikiEntry({ params }) {
-  const entry = WIKI_ENTRIES.find(e => e.slug === params.slug)
+export default async function WikiEntry({ params }) {
+  const { slug } = await params
+  const entry = WIKI_ENTRIES.find(e => e.slug === slug)
   if (!entry) notFound()
+
+  const related = WIKI_ENTRIES.filter(e => e.slug !== entry.slug).slice(0, 3)
 
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -42,8 +46,6 @@ export default function WikiEntry({ params }) {
       { '@type': 'ListItem', position: 3, name: entry.title, item: `${SITE.url}/wiki/${entry.slug}` },
     ],
   }
-
-  const related = WIKI_ENTRIES.filter(e => e.slug !== entry.slug).slice(0, 3)
 
   return (
     <>

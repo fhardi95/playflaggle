@@ -7,7 +7,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const post = BLOG_POSTS.find(p => p.slug === params.slug)
+  const { slug } = await params
+  const post = BLOG_POSTS.find(p => p.slug === slug)
   if (!post) return {}
   return {
     title: post.title,
@@ -20,13 +21,13 @@ export async function generateMetadata({ params }) {
       description: post.description,
       url: `${SITE.url}/blog/${post.slug}`,
       publishedTime: post.date,
-      authors: [SITE.name],
     },
   }
 }
 
-export default function BlogPost({ params }) {
-  const post = BLOG_POSTS.find(p => p.slug === params.slug)
+export default async function BlogPost({ params }) {
+  const { slug } = await params
+  const post = BLOG_POSTS.find(p => p.slug === slug)
   if (!post) notFound()
 
   const related = BLOG_POSTS.filter(p => p.slug !== post.slug).slice(0, 3)
@@ -107,7 +108,6 @@ export default function BlogPost({ params }) {
               })}
             </div>
 
-            {/* CTA inside article */}
             <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem 2rem', margin: '2.5rem 0', textAlign: 'center' }}>
               <div style={{ fontFamily: 'var(--font-syne)', fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-.03em', marginBottom: '.5rem' }}>
                 Ready to test your flag knowledge?
@@ -119,7 +119,6 @@ export default function BlogPost({ params }) {
             </div>
           </article>
 
-          {/* Related articles */}
           <div style={{ marginTop: '3rem', paddingTop: '2.5rem', borderTop: '1px solid var(--border)' }}>
             <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-.03em', marginBottom: '1.25rem' }}>More flag guides</h2>
             <div className="blog-grid">
